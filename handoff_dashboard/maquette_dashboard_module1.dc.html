@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>APS · Module 1 – Distribution</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F4F5F7}
+a{color:#2443C4}a:hover{color:#16308F}
+.num{font-family:'IBM Plex Mono',ui-monospace,monospace;font-feature-settings:"tnum" 1}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#5A6170;font-weight:600}
+.btn{font-family:'IBM Plex Sans',sans-serif;font-size:15px;font-weight:600;border-radius:12px;min-height:48px;padding:0 22px;cursor:pointer;border:1px solid transparent;display:inline-flex;align-items:center;gap:10px;justify-content:center}
+.btn-primary{background:#10141C;color:#FFFFFF}
+.btn-primary:hover{background:#2443C4}
+.btn-ghost{background:#FFFFFF;color:#10141C;border-color:#D3D7DF}
+.btn-ghost:hover{border-color:#10141C}
+.btn:disabled{background:#ECEEF2;color:#8A909C;border-color:#ECEEF2;cursor:not-allowed}
+.chip{font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;border-radius:999px;min-height:44px;padding:0 16px;cursor:pointer;border:1px solid #D3D7DF;background:#FFFFFF;color:#10141C}
+.chip:hover{border-color:#2443C4;color:#2443C4}
+.tile{font-family:'IBM Plex Sans',sans-serif;background:#FFFFFF;border:1.5px solid #E1E4EA;border-radius:16px;padding:22px 18px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:#10141C;min-height:200px;width:100%;box-sizing:border-box}
+.tile:hover{border-color:#10141C}
+.tile:disabled{cursor:not-allowed;background:#F8F9FA;border-style:dashed;color:#5A6170}
+.seg{font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:600;border:0;border-radius:10px;min-height:48px;padding:0 20px;cursor:pointer}
+select{font-family:'IBM Plex Sans',sans-serif;font-size:14px;color:#10141C;background:#FFFFFF;border:1px solid #D3D7DF;border-radius:10px;min-height:44px;padding:0 12px;width:100%}
+th{font-weight:600;color:#5A6170;font-size:11px;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:12px 10px;border-bottom:1px solid #E1E4EA;white-space:nowrap}
+td{padding:14px 10px;border-bottom:1px solid #EEF0F3;text-align:center;font-size:14px;white-space:nowrap}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.spin{animation:spin .9s linear infinite}
+.pulse{animation:pulse 1.2s ease-in-out infinite}
+</style>
+</helmet>
+
+<div style="min-height: 100vh; background: #F4F5F7; color: #10141C; font-family: 'IBM Plex Sans', sans-serif; text-align: center;">
+
+<!-- ===== Repère permanent : où suis-je ? ===== -->
+<header style="position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,.96); border-bottom: 1px solid #E1E4EA;">
+<div style="max-width: 1180px; margin: 0 auto; padding: 12px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+<div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: #5A6170;">
+<span style="font-weight: 700; color: #10141C;">APS · Planification de la distribution</span>
+<span aria-hidden="true">›</span>
+<span style="font-weight: 600; color: #10141C;">Module 1 · Affectation magasins → entrepôts</span>
+<span aria-hidden="true">›</span>
+<span>Module 2 · Tournées <span style="font-size: 11px; background: #ECEEF2; border-radius: 6px; padding: 2px 6px; color: #4A505C;">jalon ultérieur</span></span>
+</div>
+<ol aria-label="Progression" style="list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 4px;">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+<li style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: {{s.bg}}; color: {{s.fg}}; font-size: 13px; font-weight: 600;">
+<span class="num" style="width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; background: {{s.badgeBg}}; color: {{s.badgeFg}};">{{s.mark}}</span>{{s.label}}</li>
+</sc-for>
+</ol>
+</div>
+</header>
+
+<main style="max-width: 1180px; margin: 0 auto; padding: 48px 24px 96px; display: flex; flex-direction: column; align-items: center; gap: 64px;">
+
+<!-- ===== Étape 1 · Données ===== -->
+<section aria-labelledby="t1" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+<div class="eyebrow">Étape 1 · Données</div>
+<h1 id="t1" style="margin: 0; font-size: 36px; font-weight: 600; letter-spacing: -.02em; line-height: 1.15;">{{h1}}</h1>
+<p style="margin: 0; max-width: 640px; font-size: 16px; line-height: 1.55; color: #3F4552;">{{h1sub}}</p>
+
+<sc-if value="{{notLoaded}}" hint-placeholder-val="{{true}}">
+<div onDragOver="{{onDragOver}}" onDragLeave="{{onDragLeave}}" onDrop="{{onDrop}}" style="width: 100%; max-width: 760px; box-sizing: border-box; border: 2px dashed {{dropBorder}}; background: {{dropBg}}; border-radius: 20px; padding: 48px 24px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2443C4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path><path d="M12 17v-6M9 14l3-3 3 3"></path></svg>
+<div style="font-size: 20px; font-weight: 600;">{{dropTitle}}</div>
+<div style="font-size: 14px; color: #5A6170;">Fichier <span class="num">instance.json</span> du jeu « Tunisie » : magasins, entrepôts, capacités et coûts</div>
+<label for="file" class="btn btn-primary">Choisir un fichier</label>
+<input id="file" type="file" accept=".json,application/json" onChange="{{onFile}}" style="position: absolute; width: 1px; height: 1px; opacity: 0;">
+<sc-if value="{{fileError}}" hint-placeholder-val="{{false}}"><div style="font-size: 13px; color: #A3261B;">{{fileErrorTxt}}</div></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+<div style="font-size: 13px; color: #5A6170;">Pas de fichier sous la main ? Ouvrez un jeu d'exemple :</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+<button class="chip" onClick="{{loadS}}" disabled="{{samplesDisabled}}">Petit · 3 × 20</button>
+<button class="chip" onClick="{{loadM}}" disabled="{{samplesDisabled}}">Moyen · 5 × 50</button>
+<button class="chip" onClick="{{loadL}}" disabled="{{samplesDisabled}}">Grand · 10 × 200</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{loaded}}" hint-placeholder-val="{{false}}">
+<div style="display: inline-flex; align-items: center; gap: 12px; background: #FFFFFF; border: 1px solid #E1E4EA; border-radius: 999px; padding: 8px 8px 8px 16px; font-size: 14px;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E7A4C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+<span><b class="num">{{d.id}}</b> · {{d.reg}}</span>
+<button class="chip" onClick="{{unload}}" style="min-height: 36px;">Changer de fichier</button>
+</div>
+<div style="width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="5">
+<div style="background: #FFFFFF; border: 1px solid #E1E4EA; border-radius: 16px; padding: 20px 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+<div style="font-size: 13px; color: #5A6170;">{{k.label}}</div>
+<div class="num" style="font-size: 30px; font-weight: 500; letter-spacing: -.02em; color: {{k.col}};">{{k.value}}</div>
+<div style="font-size: 12px; color: #5A6170;">{{k.sub}}</div>
+</div>
+</sc-for>
+</div>
+<div style="width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px;">
+<sc-for list="{{insights}}" as="t" hint-placeholder-count="4">
+<div style="background: #FFFFFF; border: 1px solid #E1E4EA; border-radius: 16px; padding: 18px 16px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+<span style="font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: {{t.bg}}; color: {{t.fg}};">{{t.tag}}</span>
+<div style="font-size: 15px; font-weight: 600; line-height: 1.35;">{{t.title}}</div>
+<div style="font-size: 13px; line-height: 1.5; color: #3F4552;">{{t.text}}</div>
+</div>
+</sc-for>
+</div>
+<div style="font-size: 12px; color: #5A6170;">Lecture automatique : constats calculés par règles à partir des chiffres de l'instance.</div>
+</sc-if>
+</section>
+
+<sc-if value="{{loaded}}" hint-placeholder-val="{{false}}">
+
+<!-- ===== Étape 2 · Calcul ===== -->
+<section aria-labelledby="t2" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 22px;">
+<div class="eyebrow">Étape 2 · Calcul</div>
+<h2 id="t2" style="margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -.02em;">Lancez les méthodes</h2>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+<div style="font-size: 15px; font-weight: 600;">Peut-on fermer des entrepôts ?</div>
+<div role="radiogroup" aria-label="Décision d'ouverture" style="display: inline-flex; gap: 4px; padding: 4px; background: #E9EBEF; border-radius: 14px;">
+<button class="seg" role="radio" aria-checked="{{gapChecked}}" onClick="{{pickGap}}" disabled="{{modelLocked}}" style="background: {{gapBg}}; color: {{gapFg}};">Non · tous ouverts (GAP)</button>
+<button class="seg" role="radio" aria-checked="{{sscChecked}}" onClick="{{pickSsc}}" disabled="{{modelLocked}}" style="background: {{sscBg}}; color: {{sscFg}};">Oui · ouverture à décider (SSCFLP)</button>
+</div>
+<div style="font-size: 13px; color: #5A6170; max-width: 560px;">{{modelHelp}}</div>
+</div>
+
+<div style="width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+<sc-for list="{{families}}" as="fam" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+<div style="font-size: 15px; font-weight: 700;">{{fam.name}}</div>
+<div style="font-size: 12px; color: #5A6170;">{{fam.hint}}</div>
+</div>
+<div style="width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;">
+<sc-for list="{{fam.methods}}" as="m" hint-placeholder-count="2">
+<button class="tile" onClick="{{m.run}}" disabled="{{m.disabled}}" aria-label="{{m.aria}}" style="border-color: {{m.border}};">
+<span class="num" style="font-size: 13px; font-weight: 600; color: #5A6170;">{{m.num}}</span>
+<span style="font-size: 15px; font-weight: 600; line-height: 1.3;">{{m.name}}</span>
+<span style="font-size: 11px; color: #5A6170; line-height: 1.35;">{{m.ref}}</span>
+<sc-if value="{{m.isIdle}}" hint-placeholder-val="{{true}}"><span style="margin-top: auto; font-size: 13px; font-weight: 600; color: #2443C4;">Lancer</span></sc-if>
+<sc-if value="{{m.isLocked}}" hint-placeholder-val="{{false}}"><span style="margin-top: auto; font-size: 12px; font-weight: 600; background: #ECEEF2; color: #4A505C; border-radius: 999px; padding: 4px 10px;">Jalon ultérieur</span></sc-if>
+<sc-if value="{{m.isRun}}" hint-placeholder-val="{{false}}">
+<span style="margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%;">
+<svg class="spin" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2443C4" stroke-width="2.4" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.2-8.6"></path></svg>
+<span class="pulse" style="font-size: 12px; color: #10141C;">{{m.phase}}</span>
+<span style="width: 100%; height: 4px; background: #EEF0F3; border-radius: 2px;"><span style="display: block; height: 4px; width: {{m.pct}}%; background: #2443C4; border-radius: 2px;"></span></span>
+<span class="num" style="font-size: 11px; color: #5A6170;">{{m.elapsed}} s</span>
+</span>
+</sc-if>
+<sc-if value="{{m.isDone}}" hint-placeholder-val="{{false}}">
+<span style="margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+<span class="num" style="font-size: 20px; font-weight: 600;">{{m.cost}}</span>
+<span style="font-size: 11px; color: #5A6170;">TND / semaine · {{m.time}} s</span>
+<span style="font-size: 11px; color: #1E6B45; font-weight: 600;">Optimum prouvé</span>
+</span>
+</sc-if>
+</button>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<!-- ===== Étape 3 · Comparaison ===== -->
+<sc-if value="{{someDone}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="t3" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 22px;">
+<div class="eyebrow">Étape 3 · Comparaison</div>
+<h2 id="t3" style="margin: 0; max-width: 860px; font-size: 28px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25;">{{headline}}</h2>
+<p style="margin: 0; max-width: 680px; font-size: 15px; color: #3F4552; line-height: 1.55;">{{subline}}</p>
+
+<div style="width: 100%; overflow-x: auto; background: #FFFFFF; border: 1px solid #E1E4EA; border-radius: 16px;">
+<table style="border-collapse: collapse; width: 100%; min-width: 900px;">
+<thead><tr><th>Méthode</th><th>Coût total</th><th>Temps de réponse</th><th>Écart / meilleure</th><th>Entrepôts ouverts</th><th>Taux d'utilisation</th><th>Distance moyenne</th></tr></thead>
+<tbody>
+<sc-for list="{{bench}}" as="b" hint-placeholder-count="6">
+<tr style="color: {{b.fg}};">
+<td style="font-weight: 600;">{{b.name}}<div style="font-size: 11px; font-weight: 400; color: #5A6170;">{{b.fam}}</div></td>
+<td class="num" style="font-weight: {{b.wCost}};">{{b.cost}}</td>
+<td class="num" style="font-weight: {{b.wTime}};">{{b.time}}</td>
+<td class="num">{{b.gap}}</td>
+<td class="num">{{b.open}}</td>
+<td class="num">{{b.util}}</td>
+<td class="num">{{b.dist}}</td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="font-size: 12px; color: #5A6170;">Coûts en TND / semaine · en gras : meilleure valeur de la colonne.</div>
+
+<div style="width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px;">
+<div style="background: #FFFFFF; border: 1px solid #E1E4EA; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0;">
+<div style="font-size: 16px; font-weight: 600;">Image de l'affectation</div>
+<div style="font-size: 13px; color: #5A6170;">{{mapCaption}}</div>
+<div style="max-width: 100%; overflow: auto;">
+<div style="position: relative; width: {{map.w}}px; height: {{map.h}}px; background: #F7F8FA; border-radius: 12px;">
+<sc-for list="{{map.lines}}" as="l" hint-placeholder-count="0">
+<div style="position: absolute; left: {{l.x}}px; top: {{l.y}}px; width: {{l.len}}px; height: 1px; background: {{l.col}}; opacity: .5; transform-origin: 0 50%; transform: rotate({{l.deg}}deg);"></div>
+</sc-for>
+<sc-for list="{{map.pts}}" as="p" hint-placeholder-count="0">
+<div title="{{p.tip}}" style="position: absolute; left: {{p.x}}px; top: {{p.y}}px; width: {{p.s}}px; height: {{p.s}}px; margin: {{p.m}}px 0 0 {{p.m}}px; border-radius: 50%; background: {{p.col}}; border: 1.5px solid #FFFFFF; box-sizing: border-box;"></div>
+</sc-for>
+<sc-for list="{{map.whs}}" as="w" hint-placeholder-count="0">
+<div style="position: absolute; left: {{w.x}}px; top: {{w.y}}px; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 2px;">
+<div style="width: 16px; height: 16px; border-radius: 4px; background: {{w.col}}; border: 2px solid #10141C; box-sizing: border-box; opacity: {{w.op}};"></div>
+<span style="font-size: 11px; font-weight: 700; background: rgba(255,255,255,.9); padding: 1px 5px; border-radius: 4px; white-space: nowrap;">{{w.label}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E1E4EA; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; min-width: 0;">
+<div style="font-size: 16px; font-weight: 600;">Charge / capacité par entrepôt</div>
+<div style="font-size: 13px; color: #5A6170;">{{loadCaption}}</div>
+<div style="width: 100%; display: flex; flex-direction: column; gap: 12px;">
+<sc-for list="{{loads}}" as="w" hint-placeholder-count="5">
+<div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 120px; align-items: center; gap: 12px; font-size: 13px;">
+<span style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;"><span style="width: 10px; height: 10px; border-radius: 3px; background: {{w.col}};"></span><b>{{w.id}}</b> {{w.name}}</span>
+<div style="position: relative; height: 12px; background: #EEF0F3; border-radius: 6px;">
+<div style="height: 12px; width: {{w.pct}}%; background: {{w.bar}}; border-radius: 6px;"></div>
+<div style="position: absolute; top: -3px; left: {{w.capPos}}%; width: 2px; height: 18px; background: #10141C;"></div>
+</div>
+<span class="num" style="color: {{w.txtCol}};">{{w.txt}}</span>
+</div>
+</sc-for>
+</div>
+<div style="font-size: 12px; color: #5A6170;">Trait noir : capacité de l'entrepôt.</div>
+</div>
+</div>
+</section>
+
+<!-- ===== Étape 4 · Décision ===== -->
+<section aria-labelledby="t4" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 22px;">
+<div class="eyebrow">Étape 4 · Décision</div>
+<h2 id="t4" style="margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -.02em;">Choisissez l'affectation à transmettre</h2>
+<div role="radiogroup" aria-label="Affectation retenue" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+<sc-for list="{{choices}}" as="c" hint-placeholder-count="2">
+<button class="btn" role="radio" aria-checked="{{c.checked}}" onClick="{{c.pick}}" style="background: {{c.bg}}; color: {{c.fg}}; border: 1.5px solid {{c.border}}; flex-direction: column; gap: 2px; padding: 12px 22px; min-height: 64px;">
+<span>{{c.name}}</span><span class="num" style="font-weight: 400; font-size: 12px; opacity: .8;">{{c.sub}}</span>
+</button>
+</sc-for>
+</div>
+<div style="width: 100%; max-width: 760px; background: #FFFFFF; border: 1px solid #E1E4EA; border-radius: 16px; padding: 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-sizing: border-box;">
+<div style="font-size: 15px; font-weight: 600;">Ajustement manuel (facultatif)</div>
+<div style="width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+<div style="display: flex; flex-direction: column; gap: 4px;"><label for="mvs" style="font-size: 12px; color: #5A6170;">Magasin</label>
+<select id="mvs" value="{{mvS}}" onChange="{{onMvS}}" disabled="{{noSel}}"><option value="">Choisir un magasin</option><sc-for list="{{storeOpts}}" as="o" hint-placeholder-count="0"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
+<div style="display: flex; flex-direction: column; gap: 4px;"><label for="mvw" style="font-size: 12px; color: #5A6170;">Nouvel entrepôt</label>
+<select id="mvw" value="{{mvW}}" onChange="{{onMvW}}" disabled="{{noSel}}"><option value="">Choisir un entrepôt</option><sc-for list="{{whOpts}}" as="o" hint-placeholder-count="0"><option value="{{o.v}}">{{o.l}}</option></sc-for></select></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;">
+<button class="btn btn-ghost" onClick="{{applyMove}}" disabled="{{moveDisabled}}">Réaffecter</button>
+<button class="btn btn-ghost" onClick="{{resetMoves}}" disabled="{{noMoves}}">Annuler les ajustements</button>
+</div>
+<sc-for list="{{moveList}}" as="mv" hint-placeholder-count="0"><div class="num" style="font-size: 12px; color: #3F4552;">{{mv.txt}}</div></sc-for>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; font-size: 14px; padding-top: 6px; border-top: 1px solid #EEF0F3; width: 100%;">
+<span>Coût : <b class="num">{{dec.cost}}</b></span>
+<span>Écart / optimum : <b class="num" style="color: {{dec.gapCol}};">{{dec.gap}}</b></span>
+<span>Capacités : <b style="color: {{dec.feasCol}};">{{dec.feas}}</b></span>
+</div>
+</div>
+<button class="btn btn-primary" onClick="{{validate}}" disabled="{{validateDisabled}}" style="min-height: 56px; padding: 0 32px; font-size: 16px;">Valider et transmettre au module 2</button>
+<sc-if value="{{validated}}" hint-placeholder-val="{{false}}">
+<div style="background: #EAF5EF; border: 1px solid #BFE0CD; border-radius: 16px; padding: 18px 24px; font-size: 14px; color: #174D33; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+<b>Affectation validée · scénario <span class="num">{{scen}}</span></b>
+<span class="num">affectation_validee.json · {{dec.nStores}} magasins · {{dec.nOpen}} entrepôts</span>
+<span>Prête pour le module 2 (jalon ultérieur).</span>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+</sc-if>
+
+<footer style="max-width: 720px; font-size: 12px; color: #5A6170; line-height: 1.6;">Démonstration : les résultats des méthodes exactes sont les solutions de référence contenues dans l'instance (HiGHS) et les temps de réponse sont simulés, en attendant le branchement de vos implémentations.</footer>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3600}}'>
+var DATA_URL = '/_blob/24cd65d2eae64e1d59b2fa17e48abe37';
+var KPAL = 0.12324;
+var WC = ['#2443C4', '#D9822B', '#1E8A6E', '#B8336A', '#6D4CC2', '#2C8FB8', '#8A6D1E', '#C0392B', '#4F6D2E', '#5E6472', '#0F766E', '#9D174D', '#1D4ED8', '#A16207', '#4338CA'];
+var NEUTRAL = '#A3AAB8';
+var FAM = { ex: { name: 'Exactes', hint: 'optimum prouvé' }, he: { name: 'Heuristiques', hint: 'rapides, sans garantie' }, me: { name: 'Métaheuristiques', hint: 'stochastiques' } };
+var METHODS = [
+  { k: 'cs', fam: 'ex', num: '①', name: 'Cut-and-solve', ref: 'Gadegaard, Klose & Nielsen (2018)', ready: true,
+    phases: ['Plans coupants', 'Branchement local', 'Problème épars / dense', 'Fermeture de l’écart'] },
+  { k: 'bp', fam: 'ex', num: '②', name: 'Branch-and-price', ref: 'Ryu & Park (2021)', ready: true,
+    phases: ['Décomposition de Dantzig-Wolfe', 'Génération de colonnes', 'Branchement', 'Fermeture de l’écart'] },
+  { k: 'h1', fam: 'he', num: '③', name: 'Matheuristique à grands voisinages', ref: 'Kong (2021)', ready: false },
+  { k: 'h2', fam: 'he', num: '④', name: 'Kernel Search + motifs', ref: 'Bakker et al. (2025)', ready: false },
+  { k: 'm1', fam: 'me', num: '⑤', name: 'Recuit simulé', ref: 'McKendall & Dhungel (2024)', ready: false },
+  { k: 'm2', fam: 'me', num: '⑥', name: 'Recuit multi-voisinages', ref: 'Ceschia & Schaerf (2024)', ready: false }
+];
+function nf(x, d) { d = d || 0; return Number(x).toLocaleString('fr-FR', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+function pct(x, d) { return nf(100 * x, d === undefined ? 1 : d) + ' %'; }
+
+// Convertit un instance.json du générateur vers le format interne
+function fromInstance(J) {
+  var W = J.entrepots.map(function (e) { return [e.id, e.nom.split(' (')[0].split(' – ')[0], e.lat, e.lon, e.capacite, e.cout_fixe_semaine, e.cout_manutention_palette]; });
+  var idx = {}; W.forEach(function (w, j) { idx[w[0]] = j; });
+  var ref = J.reference || [];
+  var g = ref.filter(function (r) { return /^GAP/.test(r.modele); })[0], s = ref.filter(function (r) { return /^SSCFLP/.test(r.modele); })[0];
+  var code = { 'proximité': 'P', 'supermarché': 'S', 'hypermarché': 'H' };
+  var S = J.magasins.map(function (m, i) {
+    var dist = J.cout_affectation[i].map(function (c, j) { return Math.max(0, (c / m.demande - W[j][6]) / (2 * KPAL)); });
+    return [m.id.replace(/^PV/, ''), m.ville, m.gouvernorat, code[m.format] || 'P', m.lat, m.lon, m.demande, dist,
+      s && s.affectation ? idx[s.affectation[m.id]] : null, g && g.affectation ? idx[g.affectation[m.id]] : null];
+  });
+  return { id: J.meta.id, reg: J.meta.region, rho: J.meta.rho, W: W, S: S };
+}
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { samples: null, d: null, importing: false, drag: false, err: '', model: 'ssc', runs: {}, sel: null, moves: [], mvS: '', mvW: '', validated: false, scen: '' };
+    this.timers = {};
+  }
+  componentDidMount() {
+    var self = this;
+    fetch(DATA_URL).then(function (r) { return r.json(); }).then(function (x) { self.setState({ samples: x }); }).catch(function () {});
+  }
+  componentWillUnmount() { this.stopAll(); }
+  stopAll() { for (var k in this.timers) clearInterval(this.timers[k]); this.timers = {}; }
+  fresh(d) { this.stopAll(); this.setState({ d: d, importing: false, err: '', runs: {}, sel: null, moves: [], mvS: '', mvW: '', validated: false }); }
+  loadSample(k) {
+    var self = this; if (!this.state.samples) return;
+    this.setState({ importing: true });
+    setTimeout(function () { self.fresh(self.state.samples[k]); }, 600);
+  }
+  readFile(file) {
+    var self = this; if (!file) return;
+    var fr = new FileReader();
+    fr.onload = function () {
+      try { self.fresh(fromInstance(JSON.parse(fr.result))); }
+      catch (e) { self.setState({ err: 'Ce fichier n’a pas le format instance.json attendu.', importing: false }); }
+    };
+    this.setState({ importing: true, drag: false });
+    fr.readAsText(file);
+  }
+  setModel(m) { if (this.state.model === m) return; this.stopAll(); this.setState({ model: m, runs: {}, sel: null, moves: [], validated: false }); }
+  run(mt) {
+    var self = this, n = this.state.d.S.length;
+    var r = this.state.runs[mt.k]; if (r && r.st === 'run') return;
+    var dur = ((mt.k === 'cs' ? 1.6 : 2.4) + (mt.k === 'cs' ? 0.008 : 0.013) * n) * (this.state.model === 'ssc' ? 1.25 : 1);
+    var t0 = Date.now(), runs = Object.assign({}, this.state.runs);
+    runs[mt.k] = { st: 'run', p: 0, el: 0 };
+    this.setState({ runs: runs, validated: false });
+    this.timers[mt.k] = setInterval(function () {
+      var el = (Date.now() - t0) / 1000, rr = Object.assign({}, self.state.runs);
+      if (el >= dur) { clearInterval(self.timers[mt.k]); rr[mt.k] = { st: 'done', p: 1, el: dur }; self.setState({ runs: rr, sel: self.state.sel || mt.k }); }
+      else { rr[mt.k] = { st: 'run', p: el / dur, el: el }; self.setState({ runs: rr }); }
+    }, 90);
+  }
+  evalAssign(d, a, ssc) {
+    var m = d.W.length, load = new Array(m).fill(0), tr = 0, dist = 0;
+    d.S.forEach(function (s, i) { var j = a[i]; load[j] += s[6]; tr += s[6] * (2 * KPAL * s[7][j] + d.W[j][6]); dist += s[7][j]; });
+    var open = [], fixed = 0, cap = 0;
+    for (var j = 0; j < m; j++) { var o = ssc ? load[j] > 0 : true; open.push(o); if (o) { cap += d.W[j][4]; if (ssc) fixed += d.W[j][5]; } }
+    var D = load.reduce(function (x, y) { return x + y; }, 0);
+    return { load: load, open: open, nOpen: open.filter(Boolean).length, tot: tr + fixed, util: D / cap, dist: dist / d.S.length, feas: load.every(function (l, j) { return l <= d.W[j][4]; }) };
+  }
+
+  renderVals() {
+    var self = this, st = this.state, d = st.d, loaded = !!d;
+    var out = {
+      loaded: loaded, notLoaded: !loaded,
+      h1: loaded ? 'Vos données sont chargées' : 'Commencez par importer vos données',
+      h1sub: loaded ? 'Vérifiez l’instance ci-dessous, puis lancez les méthodes à l’étape 2.' : 'Le tableau de bord compare plusieurs méthodes pour décider quel entrepôt approvisionne chaque magasin. Tout part de votre instance.',
+      dropTitle: st.importing ? 'Lecture du fichier…' : 'Glissez-déposez votre fichier ici',
+      dropBorder: st.drag ? '#2443C4' : '#B9C0CD', dropBg: st.drag ? '#EEF2FD' : '#FFFFFF',
+      onDragOver: function (e) { e.preventDefault(); if (!self.state.drag) self.setState({ drag: true }); },
+      onDragLeave: function () { self.setState({ drag: false }); },
+      onDrop: function (e) { e.preventDefault(); self.readFile(e.dataTransfer && e.dataTransfer.files[0]); },
+      onFile: function (e) { self.readFile(e.target.files && e.target.files[0]); },
+      fileError: !!st.err, fileErrorTxt: st.err,
+      samplesDisabled: !st.samples || st.importing,
+      loadS: function () { self.loadSample('S'); }, loadM: function () { self.loadSample('M'); }, loadL: function () { self.loadSample('L'); },
+      unload: function () { self.stopAll(); self.setState({ d: null, runs: {}, sel: null, moves: [], validated: false }); }
+    };
+    var doneKeys = Object.keys(st.runs).filter(function (k) { return st.runs[k].st === 'done'; });
+    var stepDone = [loaded, doneKeys.length > 0, !!st.sel && doneKeys.length > 0, st.validated];
+    var labels = ['Données', 'Calcul', 'Comparaison', 'Décision'], cur = stepDone.indexOf(false);
+    out.steps = labels.map(function (l, i) {
+      var dn = stepDone[i], ac = i === cur;
+      return { label: l, mark: dn ? '✓' : String(i + 1), bg: ac ? '#10141C' : 'transparent', fg: ac ? '#FFFFFF' : (dn ? '#10141C' : '#5A6170'),
+        badgeBg: ac ? '#2443C4' : (dn ? '#E3F1EA' : '#E9EBEF'), badgeFg: ac ? '#FFFFFF' : (dn ? '#1E6B45' : '#5A6170') };
+    });
+    if (!loaded) return Object.assign(out, { d: {}, kpis: [], insights: [], families: [], someDone: false });
+
+    var S = d.S, W = d.W, n = S.length, m = W.length, ssc = st.model === 'ssc';
+    out.d = d;
+    var D = 0; S.forEach(function (s) { D += s[6]; });
+    var Q = 0; W.forEach(function (w) { Q += w[4]; });
+    var fill = D / Q;
+    var govs = {}; S.forEach(function (s) { govs[s[2]] = (govs[s[2]] || 0) + s[6]; });
+    var gl = Object.keys(govs).map(function (g) { return { g: g, v: govs[g] }; }).sort(function (a, b) { return b.v - a.v; });
+    out.kpis = [
+      { label: 'Magasins', value: nf(n), sub: gl.length + ' gouvernorats', col: '#10141C' },
+      { label: 'Entrepôts candidats', value: nf(m), sub: 'zones réelles', col: '#10141C' },
+      { label: 'Demande', value: nf(D), sub: 'palettes / semaine', col: '#10141C' },
+      { label: 'Capacité', value: nf(Q), sub: nf(d.rho, 2) + ' × la demande', col: '#10141C' },
+      { label: 'Remplissage', value: pct(fill, 0), sub: fill >= 0.8 ? 'tension forte' : (fill >= 0.7 ? 'tension modérée' : 'marge confortable'), col: fill >= 0.8 ? '#9A4A0A' : '#10141C' }
+    ];
+    // Lecture automatique (règles, 4 constats max)
+    var near = S.map(function (s) { var b = 0; for (var j = 1; j < m; j++) if (s[7][j] < s[7][b]) b = j; return b; });
+    var nload = new Array(m).fill(0); S.forEach(function (s, i) { nload[near[i]] += s[6]; });
+    var wj = 0; for (var j = 1; j < m; j++) if (nload[j] / W[j][4] > nload[wj] / W[wj][4]) wj = j;
+    var wr = nload[wj] / W[wj][4];
+    var big = S.slice().sort(function (a, b) { return b[6] - a[6]; })[0];
+    var hyp = S.filter(function (s) { return s[3] === 'H'; }), hypD = hyp.reduce(function (a, s) { return a + s[6]; }, 0);
+    var far = 0; S.forEach(function (s, i) { if (s[7][near[i]] > S[far][7][near[far]]) far = i; });
+    var T = { alerte: ['#FBEDE0', '#8A4A0A'], info: ['#E8EDFB', '#1F3A9E'], ok: ['#E3F1EA', '#1E6B45'] };
+    function I(t, tag, title, text) { return { bg: T[t][0], fg: T[t][1], tag: tag, title: title, text: text }; }
+    out.insights = [
+      wr > 1 ? I('alerte', 'Proximité', 'Servir chaque magasin par l’entrepôt le plus proche est impossible', W[wj][0] + ' ' + W[wj][1] + ' serait chargé à ' + pct(wr, 0) + ' de sa capacité : certains magasins devront aller plus loin.')
+             : I('ok', 'Proximité', 'Servir chaque magasin par l’entrepôt le plus proche est faisable', 'L’entrepôt le plus sollicité, ' + W[wj][0] + ' ' + W[wj][1] + ', atteindrait ' + pct(wr, 0) + ' de sa capacité.'),
+      I(fill >= 0.7 ? 'alerte' : 'ok', 'Capacité', 'Remplissage du réseau : ' + pct(fill, 0), fill >= 0.8 ? 'Capacités tendues : la gestion des capacités sera décisive pour les heuristiques.' : 'Il reste ' + nf(Q - D) + ' palettes de marge par semaine, inégalement réparties.'),
+      I(gl[0].v / D > 0.3 ? 'alerte' : 'info', 'Concentration', gl[0].g + ' pèse ' + pct(gl[0].v / D, 0) + ' de la demande', 'Les trois premiers gouvernorats en représentent ' + pct(gl.slice(0, 3).reduce(function (a, x) { return a + x.v; }, 0) / D, 0) + '.'),
+      hyp.length ? I('info', 'Gros clients', hyp.length + ' hypermarché' + (hyp.length > 1 ? 's' : '') + ' = ' + pct(hypD / D, 0) + ' de la demande', 'Le plus gros (PV' + big[0] + ', ' + big[1] + ') commande ' + nf(big[6]) + ' palettes par semaine.')
+                 : I('info', 'Isolement', 'Magasin le plus isolé : ' + S[far][1], 'À ' + nf(S[far][7][near[far]]) + ' km de l’entrepôt le plus proche.')
+    ];
+
+    // Modèle
+    var anyRun = Object.keys(st.runs).some(function (k) { return st.runs[k].st === 'run'; });
+    out.modelLocked = anyRun;
+    out.modelHelp = ssc ? 'Le calcul choisit aussi quels entrepôts ouvrir, en payant leur coût fixe (localisation–affectation).' : 'Tous les entrepôts restent ouverts : le calcul décide seulement de l’affectation (affectation généralisée).';
+    out.gapChecked = ssc ? 'false' : 'true'; out.sscChecked = ssc ? 'true' : 'false';
+    out.gapBg = ssc ? 'transparent' : '#FFFFFF'; out.gapFg = ssc ? '#5A6170' : '#10141C';
+    out.sscBg = ssc ? '#FFFFFF' : 'transparent'; out.sscFg = ssc ? '#10141C' : '#5A6170';
+    out.pickGap = function () { self.setModel('gap'); }; out.pickSsc = function () { self.setModel('ssc'); };
+
+    var optA = S.map(function (s) { return ssc ? s[8] : s[9]; });
+    var hasRef = optA.every(function (x) { return x !== null && x !== undefined; });
+    var optE = hasRef ? this.evalAssign(d, optA, ssc) : null;
+
+    var res = {};
+    var cards = METHODS.map(function (mt) {
+      var r = st.runs[mt.k], isRun = !!(r && r.st === 'run'), isDone = !!(r && r.st === 'done' && optE);
+      if (isDone) res[mt.k] = { e: optE, t: r.el };
+      var cur = isRun ? Math.min(mt.phases.length - 1, Math.floor(r.p * mt.phases.length)) : 0;
+      return { fam: mt.fam, num: mt.num, name: mt.name, ref: mt.ref,
+        isLocked: !mt.ready, isIdle: mt.ready && !isRun && !isDone, isRun: isRun, isDone: isDone,
+        phase: isRun ? mt.phases[cur] : '', pct: isRun ? (100 * r.p).toFixed(1) : 0, elapsed: isRun ? nf(r.el, 1) : '0',
+        cost: isDone ? nf(optE.tot) : '', time: isDone ? nf(r.el, 2) : '',
+        border: isDone ? '#1E7A4C' : (isRun ? '#2443C4' : '#E1E4EA'),
+        disabled: !mt.ready || isRun || !hasRef,
+        aria: mt.ready ? 'Lancer ' + mt.name : mt.name + ', jalon ultérieur',
+        run: function () { self.run(mt); } };
+    });
+    out.families = ['ex', 'he', 'me'].map(function (f) { return { name: FAM[f].name, hint: FAM[f].hint, methods: cards.filter(function (c) { return c.fam === f; }) }; });
+
+    var dk = Object.keys(res);
+    out.someDone = dk.length > 0;
+    if (!dk.length) return out;
+    var best = Math.min.apply(null, dk.map(function (k) { return res[k].e.tot; }));
+    var bestT = Math.min.apply(null, dk.map(function (k) { return res[k].t; }));
+    var nameOf = function (k) { var x = METHODS.filter(function (mt) { return mt.k === k; })[0]; return x.num + ' ' + x.name; };
+    if (dk.length >= 2) {
+      var fast = dk.slice().sort(function (a, b) { return res[a].t - res[b].t; });
+      var same = dk.every(function (k) { return Math.abs(res[k].e.tot - best) < 0.5; });
+      out.headline = same ? 'Même coût optimal, ' + nf(best) + ' TND/semaine : ' + nameOf(fast[0]) + ' répond ' + nf(res[fast[fast.length - 1]].t / res[fast[0]].t, 1) + ' fois plus vite'
+                          : nameOf(dk.slice().sort(function (a, b) { return res[a].e.tot - res[b].e.tot; })[0]) + ' donne le coût le plus bas : ' + nf(best) + ' TND/semaine';
+    } else {
+      out.headline = nameOf(dk[0]) + ' trouve l’optimum : ' + nf(best) + ' TND/semaine avec ' + res[dk[0]].e.nOpen + ' entrepôt' + (res[dk[0]].e.nOpen > 1 ? 's' : '') + ' sur ' + m;
+    }
+    out.subline = 'Taux d’utilisation ' + pct(optE.util, 0) + ', distance moyenne magasin–entrepôt ' + nf(optE.dist, 1) + ' km. Les méthodes ③ à ⑥ compléteront la comparaison au jalon suivant.';
+    out.bench = METHODS.map(function (mt) {
+      var r = res[mt.k];
+      return { name: mt.num + ' ' + mt.name, fam: FAM[mt.fam].name, fg: r ? '#10141C' : '#8A909C',
+        cost: r ? nf(r.e.tot) : (mt.ready ? 'non lancé' : 'jalon ultérieur'), wCost: r && Math.abs(r.e.tot - best) < 0.5 ? 700 : 400,
+        time: r ? nf(r.t, 2) + ' s' : '—', wTime: r && r.t === bestT ? 700 : 400,
+        gap: r ? pct((r.e.tot - best) / best, 2) : '—', open: r ? r.e.nOpen + ' / ' + m : '—', util: r ? pct(r.e.util, 0) : '—', dist: r ? nf(r.e.dist, 1) + ' km' : '—' };
+    });
+
+    // Décision : affectation courante (avec ajustements)
+    var sel = st.sel && res[st.sel] ? st.sel : dk[0];
+    var curA = optA.slice(); st.moves.forEach(function (mv) { curA[mv.i] = mv.j; });
+    var curE = this.evalAssign(d, curA, ssc);
+
+    // Carte
+    var lats = S.map(function (s) { return s[4]; }).concat(W.map(function (w) { return w[2]; }));
+    var lons = S.map(function (s) { return s[5]; }).concat(W.map(function (w) { return w[3]; }));
+    var la0 = Math.min.apply(null, lats), la1 = Math.max.apply(null, lats), lo0 = Math.min.apply(null, lons), lo1 = Math.max.apply(null, lons);
+    var cphi = Math.cos((la0 + la1) / 2 * Math.PI / 180);
+    var sx = Math.max((lo1 - lo0) * cphi, 0.05), sy = Math.max(la1 - la0, 0.05);
+    var sc = Math.min(470 / sx, 520 / sy), pad = 36;
+    function px(lo) { return (lo - lo0) * cphi * sc + pad; }
+    function py(la) { return (la1 - la) * sc + pad; }
+    var col = W.map(function (w, j) { return WC[j % WC.length]; });
+    out.map = { w: Math.round(sx * sc + 2 * pad), h: Math.round(sy * sc + 2 * pad),
+      pts: S.map(function (s, i) { var z = Math.round(6 + Math.sqrt(s[6]) * 0.9); return { x: px(s[5]).toFixed(1), y: py(s[4]).toFixed(1), s: z, m: -z / 2, col: col[curA[i]], tip: 'PV' + s[0] + ' · ' + s[1] + ' · ' + s[6] + ' pal./sem. → ' + W[curA[i]][0] }; }),
+      lines: S.map(function (s, i) { var j = curA[i], x1 = px(s[5]), y1 = py(s[4]), x2 = px(W[j][3]), y2 = py(W[j][2]); return { x: x1.toFixed(1), y: y1.toFixed(1), len: Math.hypot(x2 - x1, y2 - y1).toFixed(1), deg: (Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI).toFixed(2), col: col[j] }; }),
+      whs: W.map(function (w, j) { var o = curE.open[j]; return { x: px(w[3]).toFixed(1), y: py(w[2]).toFixed(1), col: o ? col[j] : '#FFFFFF', op: o ? 1 : 0.5, label: w[0] + ' ' + w[1] + (o ? '' : ' · fermé') }; }) };
+    out.mapCaption = 'Solution ' + nameOf(sel) + (st.moves.length ? ' ajustée' : '') + ' · couleur = entrepôt, taille = demande';
+    var mx = Math.max(1.15, Math.max.apply(null, W.map(function (w, j) { return curE.load[j] / w[4]; })) * 1.05);
+    out.loadCaption = curE.nOpen + ' entrepôt' + (curE.nOpen > 1 ? 's' : '') + ' ouvert' + (curE.nOpen > 1 ? 's' : '') + ' · utilisation globale ' + pct(curE.util, 0);
+    out.loads = W.map(function (w, j) {
+      var r = curE.load[j] / w[4], closed = !curE.open[j];
+      return { id: w[0], name: w[1], col: closed ? NEUTRAL : col[j], pct: (100 * Math.min(r, mx) / mx).toFixed(1), capPos: (100 / mx).toFixed(1),
+        bar: r > 1 ? '#C0392B' : col[j], txt: closed ? 'fermé' : nf(curE.load[j]) + ' / ' + nf(w[4]), txtCol: r > 1 ? '#A3261B' : '#3F4552' };
+    });
+
+    out.choices = dk.map(function (k) {
+      var on = sel === k;
+      return { name: nameOf(k), sub: nf(res[k].e.tot) + ' TND/sem. · ' + nf(res[k].t, 2) + ' s', checked: on ? 'true' : 'false',
+        bg: on ? '#10141C' : '#FFFFFF', fg: on ? '#FFFFFF' : '#10141C', border: on ? '#10141C' : '#D3D7DF',
+        pick: function () { self.setState({ sel: k, validated: false }); } };
+    });
+    out.noSel = false;
+    out.storeOpts = S.map(function (s, i) { return { v: String(i), l: 'PV' + s[0] + ' · ' + s[1] + ' · ' + s[6] + ' pal. → ' + W[curA[i]][0] }; });
+    out.whOpts = W.map(function (w, j) { return { v: String(j), l: w[0] + ' ' + w[1] + ' · reste ' + nf(w[4] - curE.load[j]) }; });
+    out.mvS = st.mvS; out.mvW = st.mvW;
+    out.onMvS = function (e) { self.setState({ mvS: e.target.value }); };
+    out.onMvW = function (e) { self.setState({ mvW: e.target.value }); };
+    out.moveDisabled = st.mvS === '' || st.mvW === '';
+    out.applyMove = function () { var i = Number(self.state.mvS), j = Number(self.state.mvW); self.setState({ moves: self.state.moves.filter(function (x) { return x.i !== i; }).concat([{ i: i, j: j }]), mvS: '', mvW: '', validated: false }); };
+    out.noMoves = !st.moves.length;
+    out.resetMoves = function () { self.setState({ moves: [], validated: false }); };
+    out.moveList = st.moves.map(function (mv) { var s = S[mv.i]; return { txt: 'PV' + s[0] + ' (' + s[1] + ') : ' + W[optA[mv.i]][0] + ' → ' + W[mv.j][0] }; });
+    var g = (curE.tot - optE.tot) / optE.tot;
+    out.dec = { cost: nf(curE.tot) + ' TND/sem.', gap: '+' + pct(g, 2), gapCol: g > 0.0001 ? '#9A4A0A' : '#1E6B45', feas: curE.feas ? 'respectées' : 'dépassées', feasCol: curE.feas ? '#1E6B45' : '#A3261B', nStores: n, nOpen: curE.nOpen };
+    out.validateDisabled = !curE.feas || st.validated;
+    out.validated = st.validated; out.scen = st.scen;
+    out.validate = function () { var t = new Date(); self.setState({ validated: true, scen: 'SC-' + d.id + '-' + (ssc ? 'SSC' : 'GAP') + '-' + String(t.getHours()).padStart(2, '0') + String(t.getMinutes()).padStart(2, '0') }); };
+    return out;
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APS · Module 1 – Distribution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="page">
+
+<header class="bandeau">
+  <div class="bandeau-in">
+    <div class="chemin">
+      <span class="fort">APS · Planification de la distribution</span>
+      <span aria-hidden="true">›</span>
+      <span class="moyen">Module 1 · Affectation magasins → entrepôts</span>
+      <span aria-hidden="true">›</span>
+      <span>Module 2 · Tournées <span class="badge-jalon">jalon ultérieur</span></span>
+    </div>
+    <ol id="etapes" class="etapes" aria-label="Progression"></ol>
+  </div>
+</header>
+
+<main>
+  <!-- Étape 1 · Données -->
+  <section id="etape1" aria-labelledby="t1" class="etape"></section>
+
+  <!-- Étape 2 · Calcul -->
+  <section id="etape2" aria-labelledby="t2" class="etape" hidden></section>
+
+  <!-- Étape 3 · Comparaison -->
+  <section id="etape3" aria-labelledby="t3" class="etape" hidden>
+    <div class="eyebrow">Étape 3 · Comparaison</div>
+    <h2 id="t3" class="titre-conclusion"></h2>
+    <p id="s3-sous" class="sous-titre"></p>
+    <div class="carte-blanche tableau-boite"><table id="s3-tableau"></table></div>
+    <div class="note">Coûts en TND / semaine · en gras : meilleure valeur de la colonne.</div>
+    <div class="grille-2">
+      <div class="carte-blanche panneau">
+        <div class="panneau-titre">Image de l’affectation</div>
+        <div id="s3-carte-leg" class="note"></div>
+        <div id="carte" class="carte-geo" role="img" aria-label="Carte de l’affectation des magasins aux entrepôts"></div>
+      </div>
+      <div class="carte-blanche panneau">
+        <div class="panneau-titre">Charge / capacité par entrepôt</div>
+        <div id="s3-charges-leg" class="note"></div>
+        <div id="s3-charges" class="charges"></div>
+        <div class="note">Trait noir : capacité de l’entrepôt.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Étape 4 · Décision -->
+  <section id="etape4" aria-labelledby="t4" class="etape" hidden></section>
+
+  <footer>Résultats calculés en direct par les implémentations Python des méthodes ① et ② ; temps de réponse mesurés sur le serveur (un calcul à la fois, limite de 120 s par méthode).</footer>
+</main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

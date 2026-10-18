@@ -1,0 +1,982 @@
+{
+ "meta": {
+  "id": "TN-M-g1-r135",
+  "region": "Nord-Est et Sahel",
+  "taille": "M",
+  "graine": 1,
+  "rho": 1.35,
+  "unite_demande": "palettes / semaine",
+  "unite_cout": "TND / semaine",
+  "kpal": 0.12324,
+  "source": "jeu de substitution genere par generer_instances.py"
+ },
+ "entrepots": [
+  {
+   "id": "E01",
+   "nom": "Radès (Ben Arous)",
+   "lat": 36.768,
+   "lon": 10.275,
+   "capacite": 173,
+   "cout_fixe_semaine": 3720.61,
+   "cout_manutention_palette": 3.5
+  },
+  {
+   "id": "E02",
+   "nom": "Charguia (Tunis)",
+   "lat": 36.84,
+   "lon": 10.205,
+   "capacite": 196,
+   "cout_fixe_semaine": 2945.32,
+   "cout_manutention_palette": 3.72
+  },
+  {
+   "id": "E03",
+   "nom": "Grombalia (Nabeul)",
+   "lat": 36.598,
+   "lon": 10.5,
+   "capacite": 221,
+   "cout_fixe_semaine": 2622.71,
+   "cout_manutention_palette": 3.62
+  },
+  {
+   "id": "E04",
+   "nom": "Sousse Sidi Abdelhamid (Sousse)",
+   "lat": 35.8,
+   "lon": 10.64,
+   "capacite": 226,
+   "cout_fixe_semaine": 2471.85,
+   "cout_manutention_palette": 4.09
+  },
+  {
+   "id": "E05",
+   "nom": "Bizerte Menzel Abderrahmane (Bizerte)",
+   "lat": 37.233,
+   "lon": 9.86,
+   "capacite": 231,
+   "cout_fixe_semaine": 2589.96,
+   "cout_manutention_palette": 3.6
+  }
+ ],
+ "magasins": [
+  {
+   "id": "PV0001",
+   "ville": "Hammamet",
+   "gouvernorat": "Nabeul",
+   "format": "proximité",
+   "lat": 36.3726,
+   "lon": 10.6462,
+   "demande": 5
+  },
+  {
+   "id": "PV0002",
+   "ville": "La Marsa",
+   "gouvernorat": "Tunis",
+   "format": "supermarché",
+   "lat": 36.8612,
+   "lon": 10.3172,
+   "demande": 16
+  },
+  {
+   "id": "PV0003",
+   "ville": "La Marsa",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.931,
+   "lon": 10.3206,
+   "demande": 7
+  },
+  {
+   "id": "PV0004",
+   "ville": "La Manouba",
+   "gouvernorat": "La Manouba",
+   "format": "proximité",
+   "lat": 36.8419,
+   "lon": 10.0904,
+   "demande": 6
+  },
+  {
+   "id": "PV0005",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.7986,
+   "lon": 10.1659,
+   "demande": 12
+  },
+  {
+   "id": "PV0006",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "supermarché",
+   "lat": 36.8043,
+   "lon": 10.2052,
+   "demande": 35
+  },
+  {
+   "id": "PV0007",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.7608,
+   "lon": 10.1748,
+   "demande": 7
+  },
+  {
+   "id": "PV0008",
+   "ville": "Ben Arous",
+   "gouvernorat": "Ben Arous",
+   "format": "proximité",
+   "lat": 36.7315,
+   "lon": 10.1709,
+   "demande": 7
+  },
+  {
+   "id": "PV0009",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.8172,
+   "lon": 10.2274,
+   "demande": 5
+  },
+  {
+   "id": "PV0010",
+   "ville": "Sousse",
+   "gouvernorat": "Sousse",
+   "format": "proximité",
+   "lat": 35.8031,
+   "lon": 10.6325,
+   "demande": 5
+  },
+  {
+   "id": "PV0011",
+   "ville": "Sousse",
+   "gouvernorat": "Sousse",
+   "format": "proximité",
+   "lat": 35.8192,
+   "lon": 10.6615,
+   "demande": 7
+  },
+  {
+   "id": "PV0012",
+   "ville": "Kélibia",
+   "gouvernorat": "Nabeul",
+   "format": "proximité",
+   "lat": 36.8622,
+   "lon": 11.0736,
+   "demande": 7
+  },
+  {
+   "id": "PV0013",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "supermarché",
+   "lat": 36.8318,
+   "lon": 10.1713,
+   "demande": 28
+  },
+  {
+   "id": "PV0014",
+   "ville": "Zaghouan",
+   "gouvernorat": "Zaghouan",
+   "format": "proximité",
+   "lat": 36.4465,
+   "lon": 10.1443,
+   "demande": 12
+  },
+  {
+   "id": "PV0015",
+   "ville": "Nabeul",
+   "gouvernorat": "Nabeul",
+   "format": "proximité",
+   "lat": 36.4475,
+   "lon": 10.7222,
+   "demande": 9
+  },
+  {
+   "id": "PV0016",
+   "ville": "Bizerte",
+   "gouvernorat": "Bizerte",
+   "format": "supermarché",
+   "lat": 37.258,
+   "lon": 9.8637,
+   "demande": 39
+  },
+  {
+   "id": "PV0017",
+   "ville": "Mahdia",
+   "gouvernorat": "Mahdia",
+   "format": "supermarché",
+   "lat": 35.4903,
+   "lon": 11.0587,
+   "demande": 21
+  },
+  {
+   "id": "PV0018",
+   "ville": "Ben Arous",
+   "gouvernorat": "Ben Arous",
+   "format": "supermarché",
+   "lat": 36.756,
+   "lon": 10.2355,
+   "demande": 18
+  },
+  {
+   "id": "PV0019",
+   "ville": "Raoued",
+   "gouvernorat": "Ariana",
+   "format": "supermarché",
+   "lat": 36.9666,
+   "lon": 10.1938,
+   "demande": 35
+  },
+  {
+   "id": "PV0020",
+   "ville": "Sousse",
+   "gouvernorat": "Sousse",
+   "format": "proximité",
+   "lat": 35.8332,
+   "lon": 10.6754,
+   "demande": 12
+  },
+  {
+   "id": "PV0021",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "supermarché",
+   "lat": 36.7777,
+   "lon": 10.1683,
+   "demande": 19
+  },
+  {
+   "id": "PV0022",
+   "ville": "Ariana",
+   "gouvernorat": "Ariana",
+   "format": "supermarché",
+   "lat": 36.8659,
+   "lon": 10.2294,
+   "demande": 15
+  },
+  {
+   "id": "PV0023",
+   "ville": "Nabeul",
+   "gouvernorat": "Nabeul",
+   "format": "proximité",
+   "lat": 36.4406,
+   "lon": 10.746,
+   "demande": 6
+  },
+  {
+   "id": "PV0024",
+   "ville": "Ariana",
+   "gouvernorat": "Ariana",
+   "format": "supermarché",
+   "lat": 36.8895,
+   "lon": 10.1816,
+   "demande": 26
+  },
+  {
+   "id": "PV0025",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "supermarché",
+   "lat": 36.8213,
+   "lon": 10.2446,
+   "demande": 23
+  },
+  {
+   "id": "PV0026",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.8099,
+   "lon": 10.1501,
+   "demande": 7
+  },
+  {
+   "id": "PV0027",
+   "ville": "Ben Arous",
+   "gouvernorat": "Ben Arous",
+   "format": "proximité",
+   "lat": 36.7654,
+   "lon": 10.1798,
+   "demande": 9
+  },
+  {
+   "id": "PV0028",
+   "ville": "Menzel Bourguiba",
+   "gouvernorat": "Bizerte",
+   "format": "proximité",
+   "lat": 37.17,
+   "lon": 9.8215,
+   "demande": 11
+  },
+  {
+   "id": "PV0029",
+   "ville": "Ariana",
+   "gouvernorat": "Ariana",
+   "format": "hypermarché",
+   "lat": 36.8471,
+   "lon": 10.2087,
+   "demande": 84
+  },
+  {
+   "id": "PV0030",
+   "ville": "Zaghouan",
+   "gouvernorat": "Zaghouan",
+   "format": "proximité",
+   "lat": 36.3882,
+   "lon": 10.1557,
+   "demande": 7
+  },
+  {
+   "id": "PV0031",
+   "ville": "Ksar Hellal",
+   "gouvernorat": "Monastir",
+   "format": "proximité",
+   "lat": 35.6716,
+   "lon": 10.9056,
+   "demande": 6
+  },
+  {
+   "id": "PV0032",
+   "ville": "La Marsa",
+   "gouvernorat": "Tunis",
+   "format": "supermarché",
+   "lat": 36.8763,
+   "lon": 10.2761,
+   "demande": 34
+  },
+  {
+   "id": "PV0033",
+   "ville": "La Manouba",
+   "gouvernorat": "La Manouba",
+   "format": "supermarché",
+   "lat": 36.8036,
+   "lon": 10.0966,
+   "demande": 21
+  },
+  {
+   "id": "PV0034",
+   "ville": "Ben Arous",
+   "gouvernorat": "Ben Arous",
+   "format": "proximité",
+   "lat": 36.7656,
+   "lon": 10.2396,
+   "demande": 5
+  },
+  {
+   "id": "PV0035",
+   "ville": "Msaken",
+   "gouvernorat": "Sousse",
+   "format": "proximité",
+   "lat": 35.7158,
+   "lon": 10.6079,
+   "demande": 8
+  },
+  {
+   "id": "PV0036",
+   "ville": "Zaghouan",
+   "gouvernorat": "Zaghouan",
+   "format": "supermarché",
+   "lat": 36.4529,
+   "lon": 10.1388,
+   "demande": 32
+  },
+  {
+   "id": "PV0037",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "supermarché",
+   "lat": 36.8234,
+   "lon": 10.2173,
+   "demande": 29
+  },
+  {
+   "id": "PV0038",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.7848,
+   "lon": 10.1921,
+   "demande": 7
+  },
+  {
+   "id": "PV0039",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.8004,
+   "lon": 10.2156,
+   "demande": 11
+  },
+  {
+   "id": "PV0040",
+   "ville": "Menzel Bourguiba",
+   "gouvernorat": "Bizerte",
+   "format": "proximité",
+   "lat": 37.1743,
+   "lon": 9.7528,
+   "demande": 10
+  },
+  {
+   "id": "PV0041",
+   "ville": "Bizerte",
+   "gouvernorat": "Bizerte",
+   "format": "proximité",
+   "lat": 37.2891,
+   "lon": 9.8612,
+   "demande": 12
+  },
+  {
+   "id": "PV0042",
+   "ville": "Raoued",
+   "gouvernorat": "Ariana",
+   "format": "supermarché",
+   "lat": 36.9273,
+   "lon": 10.1894,
+   "demande": 24
+  },
+  {
+   "id": "PV0043",
+   "ville": "Kélibia",
+   "gouvernorat": "Nabeul",
+   "format": "proximité",
+   "lat": 36.8467,
+   "lon": 11.065,
+   "demande": 8
+  },
+  {
+   "id": "PV0044",
+   "ville": "Monastir",
+   "gouvernorat": "Monastir",
+   "format": "proximité",
+   "lat": 35.7593,
+   "lon": 10.8281,
+   "demande": 6
+  },
+  {
+   "id": "PV0045",
+   "ville": "Msaken",
+   "gouvernorat": "Sousse",
+   "format": "proximité",
+   "lat": 35.7098,
+   "lon": 10.5968,
+   "demande": 6
+  },
+  {
+   "id": "PV0046",
+   "ville": "Hammamet",
+   "gouvernorat": "Nabeul",
+   "format": "proximité",
+   "lat": 36.4148,
+   "lon": 10.5533,
+   "demande": 4
+  },
+  {
+   "id": "PV0047",
+   "ville": "Raoued",
+   "gouvernorat": "Ariana",
+   "format": "proximité",
+   "lat": 36.9067,
+   "lon": 10.163,
+   "demande": 5
+  },
+  {
+   "id": "PV0048",
+   "ville": "Ben Arous",
+   "gouvernorat": "Ben Arous",
+   "format": "supermarché",
+   "lat": 36.7295,
+   "lon": 10.2224,
+   "demande": 16
+  },
+  {
+   "id": "PV0049",
+   "ville": "Ben Arous",
+   "gouvernorat": "Ben Arous",
+   "format": "proximité",
+   "lat": 36.774,
+   "lon": 10.2443,
+   "demande": 10
+  },
+  {
+   "id": "PV0050",
+   "ville": "La Manouba",
+   "gouvernorat": "La Manouba",
+   "format": "supermarché",
+   "lat": 36.831,
+   "lon": 10.1109,
+   "demande": 23
+  }
+ ],
+ "cout_affectation": [
+  [
+   102.33,
+   119.05,
+   61.64,
+   118.54,
+   200.62
+  ],
+  [
+   110.34,
+   110.08,
+   223.04,
+   664.33,
+   343.16
+  ],
+  [
+   64.56,
+   57.15,
+   112.32,
+   306.79,
+   139.26
+  ],
+  [
+   54.97,
+   41.18,
+   105.79,
+   257.24,
+   110.44
+  ],
+  [
+   80.07,
+   65.97,
+   181.03,
+   488.63,
+   248.08
+  ],
+  [
+   202.38,
+   172.99,
+   502.91,
+   1418.54,
+   737.12
+  ],
+  [
+   43.82,
+   45.9,
+   99.06,
+   275.98,
+   153.5
+  ],
+  [
+   46.33,
+   52.87,
+   96.29,
+   269.73,
+   159.4
+  ],
+  [
+   28.16,
+   23.57,
+   71.12,
+   203.77,
+   105.17
+  ],
+  [
+   190.0,
+   205.76,
+   155.49,
+   21.62,
+   285.02
+  ],
+  [
+   263.98,
+   286.24,
+   214.7,
+   34.84,
+   397.77
+  ],
+  [
+   179.47,
+   192.81,
+   152.5,
+   296.79,
+   273.93
+  ],
+  [
+   198.42,
+   131.21,
+   439.25,
+   1168.51,
+   553.53
+  ],
+  [
+   181.04,
+   207.64,
+   176.45,
+   361.72,
+   379.79
+  ],
+  [
+   179.88,
+   209.59,
+   104.59,
+   237.5,
+   354.77
+  ],
+  [
+   924.65,
+   811.72,
+   1254.53,
+   2278.35,
+   174.04
+  ],
+  [
+   1099.35,
+   1168.41,
+   936.65,
+   416.9,
+   1508.8
+  ],
+  [
+   83.85,
+   120.91,
+   228.25,
+   696.48,
+   412.28
+  ],
+  [
+   373.02,
+   282.38,
+   657.59,
+   1606.77,
+   577.61
+  ],
+  [
+   448.54,
+   486.88,
+   363.2,
+   67.12,
+   678.59
+  ],
+  [
+   122.51,
+   115.5,
+   277.74,
+   760.56,
+   405.3
+  ],
+  [
+   106.18,
+   72.47,
+   231.43,
+   634.86,
+   295.94
+  ],
+  [
+   123.81,
+   143.57,
+   73.66,
+   157.39,
+   240.18
+  ],
+  [
+   218.08,
+   143.89,
+   439.15,
+   1130.99,
+   475.55
+  ],
+  [
+   126.65,
+   114.59,
+   321.98,
+   937.06,
+   487.51
+  ],
+  [
+   50.5,
+   38.81,
+   109.66,
+   288.66,
+   140.87
+  ],
+  [
+   55.04,
+   57.3,
+   127.1,
+   355.69,
+   196.69
+  ],
+  [
+   242.44,
+   210.59,
+   336.95,
+   617.75,
+   66.01
+  ],
+  [
+   568.13,
+   334.63,
+   1286.71,
+   3518.36,
+   1671.58
+  ],
+  [
+   118.43,
+   134.81,
+   108.64,
+   198.06,
+   235.61
+  ],
+  [
+   269.45,
+   289.1,
+   223.71,
+   76.12,
+   386.14
+  ],
+  [
+   245.12,
+   205.09,
+   508.74,
+   1438.43,
+   690.08
+  ],
+  [
+   179.45,
+   145.82,
+   351.75,
+   873.69,
+   413.08
+  ],
+  [
+   22.38,
+   32.19,
+   63.97,
+   194.85,
+   113.42
+  ],
+  [
+   325.63,
+   350.48,
+   271.93,
+   56.88,
+   476.09
+  ],
+  [
+   477.66,
+   547.4,
+   471.56,
+   973.09,
+   1004.74
+  ],
+  [
+   173.19,
+   127.04,
+   422.56,
+   1190.23,
+   600.32
+  ],
+  [
+   40.93,
+   39.52,
+   99.58,
+   280.17,
+   150.1
+  ],
+  [
+   60.19,
+   56.18,
+   154.72,
+   443.41,
+   234.6
+  ],
+  [
+   234.5,
+   205.79,
+   320.64,
+   571.35,
+   71.49
+  ],
+  [
+   295.66,
+   261.0,
+   396.69,
+   713.1,
+   66.27
+  ],
+  [
+   226.56,
+   161.8,
+   426.25,
+   1071.85,
+   417.85
+  ],
+  [
+   202.69,
+   218.41,
+   170.56,
+   334.55,
+   312.88
+  ],
+  [
+   247.7,
+   267.27,
+   202.51,
+   57.0,
+   364.17
+  ],
+  [
+   244.96,
+   263.54,
+   205.0,
+   44.43,
+   357.56
+  ],
+  [
+   71.27,
+   84.61,
+   40.26,
+   101.16,
+   149.89
+  ],
+  [
+   45.78,
+   31.39,
+   88.35,
+   221.12,
+   87.57
+  ],
+  [
+   87.27,
+   120.57,
+   199.66,
+   607.34,
+   375.97
+  ],
+  [
+   43.68,
+   62.24,
+   128.78,
+   392.01,
+   225.17
+  ],
+  [
+   195.3,
+   145.31,
+   390.01,
+   973.17,
+   436.72
+  ]
+ ],
+ "reference": [
+  {
+   "modele": "GAP (tous ouverts)",
+   "solveur": "HiGHS",
+   "statut": "optimal",
+   "cout": 7151.02,
+   "affectation": {
+    "PV0001": "E03",
+    "PV0002": "E03",
+    "PV0003": "E03",
+    "PV0004": "E05",
+    "PV0005": "E02",
+    "PV0006": "E01",
+    "PV0007": "E03",
+    "PV0008": "E03",
+    "PV0009": "E01",
+    "PV0010": "E04",
+    "PV0011": "E04",
+    "PV0012": "E03",
+    "PV0013": "E02",
+    "PV0014": "E03",
+    "PV0015": "E03",
+    "PV0016": "E05",
+    "PV0017": "E04",
+    "PV0018": "E03",
+    "PV0019": "E05",
+    "PV0020": "E04",
+    "PV0021": "E03",
+    "PV0022": "E02",
+    "PV0023": "E03",
+    "PV0024": "E02",
+    "PV0025": "E01",
+    "PV0026": "E02",
+    "PV0027": "E01",
+    "PV0028": "E05",
+    "PV0029": "E02",
+    "PV0030": "E03",
+    "PV0031": "E04",
+    "PV0032": "E03",
+    "PV0033": "E01",
+    "PV0034": "E03",
+    "PV0035": "E04",
+    "PV0036": "E03",
+    "PV0037": "E01",
+    "PV0038": "E01",
+    "PV0039": "E01",
+    "PV0040": "E05",
+    "PV0041": "E05",
+    "PV0042": "E02",
+    "PV0043": "E03",
+    "PV0044": "E04",
+    "PV0045": "E04",
+    "PV0046": "E03",
+    "PV0047": "E05",
+    "PV0048": "E03",
+    "PV0049": "E01",
+    "PV0050": "E01"
+   }
+  },
+  {
+   "modele": "SSCFLP (ouverture + affectation)",
+   "solveur": "HiGHS",
+   "statut": "optimal",
+   "cout": 20413.55,
+   "affectation": {
+    "PV0001": "E04",
+    "PV0002": "E03",
+    "PV0003": "E05",
+    "PV0004": "E05",
+    "PV0005": "E05",
+    "PV0006": "E02",
+    "PV0007": "E03",
+    "PV0008": "E03",
+    "PV0009": "E02",
+    "PV0010": "E04",
+    "PV0011": "E04",
+    "PV0012": "E03",
+    "PV0013": "E02",
+    "PV0014": "E03",
+    "PV0015": "E04",
+    "PV0016": "E05",
+    "PV0017": "E04",
+    "PV0018": "E03",
+    "PV0019": "E05",
+    "PV0020": "E04",
+    "PV0021": "E03",
+    "PV0022": "E02",
+    "PV0023": "E04",
+    "PV0024": "E05",
+    "PV0025": "E03",
+    "PV0026": "E03",
+    "PV0027": "E03",
+    "PV0028": "E05",
+    "PV0029": "E02",
+    "PV0030": "E04",
+    "PV0031": "E04",
+    "PV0032": "E03",
+    "PV0033": "E05",
+    "PV0034": "E03",
+    "PV0035": "E04",
+    "PV0036": "E04",
+    "PV0037": "E02",
+    "PV0038": "E03",
+    "PV0039": "E03",
+    "PV0040": "E05",
+    "PV0041": "E05",
+    "PV0042": "E05",
+    "PV0043": "E03",
+    "PV0044": "E04",
+    "PV0045": "E04",
+    "PV0046": "E03",
+    "PV0047": "E05",
+    "PV0048": "E03",
+    "PV0049": "E03",
+    "PV0050": "E05"
+   }
+  }
+ ]
+}

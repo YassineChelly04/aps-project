@@ -1,0 +1,8 @@
+numpy
+scipy>=1.9
+pulp
+fastapi
+uvicorn
+python-multipart
+pytest
+httpx

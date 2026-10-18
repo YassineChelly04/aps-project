@@ -1,0 +1,384 @@
+{
+ "meta": {
+  "id": "TN-S-g1-r135",
+  "region": "Grand Tunis et Cap Bon",
+  "taille": "S",
+  "graine": 1,
+  "rho": 1.35,
+  "unite_demande": "palettes / semaine",
+  "unite_cout": "TND / semaine",
+  "kpal": 0.12324,
+  "source": "jeu de substitution genere par generer_instances.py"
+ },
+ "entrepots": [
+  {
+   "id": "E01",
+   "nom": "Radès (Ben Arous)",
+   "lat": 36.768,
+   "lon": 10.275,
+   "capacite": 190,
+   "cout_fixe_semaine": 3932.58,
+   "cout_manutention_palette": 4.07
+  },
+  {
+   "id": "E02",
+   "nom": "Charguia (Tunis)",
+   "lat": 36.84,
+   "lon": 10.205,
+   "capacite": 202,
+   "cout_fixe_semaine": 2895.14,
+   "cout_manutention_palette": 3.55
+  },
+  {
+   "id": "E03",
+   "nom": "Grombalia (Nabeul)",
+   "lat": 36.598,
+   "lon": 10.5,
+   "capacite": 143,
+   "cout_fixe_semaine": 2751.16,
+   "cout_manutention_palette": 3.63
+  }
+ ],
+ "magasins": [
+  {
+   "id": "PV0001",
+   "ville": "Raoued",
+   "gouvernorat": "Ariana",
+   "format": "proximité",
+   "lat": 36.982,
+   "lon": 10.2323,
+   "demande": 8
+  },
+  {
+   "id": "PV0002",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.8071,
+   "lon": 10.159,
+   "demande": 8
+  },
+  {
+   "id": "PV0003",
+   "ville": "Nabeul",
+   "gouvernorat": "Nabeul",
+   "format": "supermarché",
+   "lat": 36.4208,
+   "lon": 10.7591,
+   "demande": 31
+  },
+  {
+   "id": "PV0004",
+   "ville": "Hammam-Lif",
+   "gouvernorat": "Ben Arous",
+   "format": "proximité",
+   "lat": 36.7084,
+   "lon": 10.341,
+   "demande": 12
+  },
+  {
+   "id": "PV0005",
+   "ville": "Hammam-Lif",
+   "gouvernorat": "Ben Arous",
+   "format": "supermarché",
+   "lat": 36.7598,
+   "lon": 10.3335,
+   "demande": 33
+  },
+  {
+   "id": "PV0006",
+   "ville": "Ariana",
+   "gouvernorat": "Ariana",
+   "format": "proximité",
+   "lat": 36.8794,
+   "lon": 10.1981,
+   "demande": 10
+  },
+  {
+   "id": "PV0007",
+   "ville": "La Marsa",
+   "gouvernorat": "Tunis",
+   "format": "hypermarché",
+   "lat": 36.9143,
+   "lon": 10.3288,
+   "demande": 73
+  },
+  {
+   "id": "PV0008",
+   "ville": "Nabeul",
+   "gouvernorat": "Nabeul",
+   "format": "proximité",
+   "lat": 36.4647,
+   "lon": 10.7618,
+   "demande": 7
+  },
+  {
+   "id": "PV0009",
+   "ville": "Ariana",
+   "gouvernorat": "Ariana",
+   "format": "supermarché",
+   "lat": 36.8575,
+   "lon": 10.2251,
+   "demande": 29
+  },
+  {
+   "id": "PV0010",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.8153,
+   "lon": 10.2001,
+   "demande": 9
+  },
+  {
+   "id": "PV0011",
+   "ville": "Hammamet",
+   "gouvernorat": "Nabeul",
+   "format": "supermarché",
+   "lat": 36.4325,
+   "lon": 10.6032,
+   "demande": 19
+  },
+  {
+   "id": "PV0012",
+   "ville": "Ben Arous",
+   "gouvernorat": "Ben Arous",
+   "format": "supermarché",
+   "lat": 36.7806,
+   "lon": 10.2077,
+   "demande": 24
+  },
+  {
+   "id": "PV0013",
+   "ville": "Raoued",
+   "gouvernorat": "Ariana",
+   "format": "proximité",
+   "lat": 36.9587,
+   "lon": 10.153,
+   "demande": 4
+  },
+  {
+   "id": "PV0014",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.7918,
+   "lon": 10.1869,
+   "demande": 5
+  },
+  {
+   "id": "PV0015",
+   "ville": "Nabeul",
+   "gouvernorat": "Nabeul",
+   "format": "proximité",
+   "lat": 36.4335,
+   "lon": 10.7398,
+   "demande": 6
+  },
+  {
+   "id": "PV0016",
+   "ville": "La Marsa",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.8778,
+   "lon": 10.3088,
+   "demande": 8
+  },
+  {
+   "id": "PV0017",
+   "ville": "Tunis",
+   "gouvernorat": "Tunis",
+   "format": "proximité",
+   "lat": 36.8371,
+   "lon": 10.205,
+   "demande": 10
+  },
+  {
+   "id": "PV0018",
+   "ville": "Ariana",
+   "gouvernorat": "Ariana",
+   "format": "proximité",
+   "lat": 36.8897,
+   "lon": 10.2184,
+   "demande": 12
+  },
+  {
+   "id": "PV0019",
+   "ville": "Hammamet",
+   "gouvernorat": "Nabeul",
+   "format": "hypermarché",
+   "lat": 36.3892,
+   "lon": 10.651,
+   "demande": 79
+  },
+  {
+   "id": "PV0020",
+   "ville": "La Manouba",
+   "gouvernorat": "La Manouba",
+   "format": "proximité",
+   "lat": 36.8641,
+   "lon": 10.0889,
+   "demande": 10
+  }
+ ],
+ "cout_affectation": [
+  [
+   91.95,
+   67.78,
+   149.58
+  ],
+  [
+   60.19,
+   41.93,
+   123.37
+  ],
+  [
+   679.68,
+   759.07,
+   402.96
+  ],
+  [
+   81.61,
+   112.85,
+   112.92
+  ],
+  [
+   188.07,
+   264.62,
+   356.97
+  ],
+  [
+   84.3,
+   49.13,
+   163.43
+  ],
+  [
+   678.56,
+   568.81,
+   1127.22
+  ],
+  [
+   147.11,
+   164.76,
+   85.14
+  ],
+  [
+   215.38,
+   126.54,
+   443.51
+  ],
+  [
+   60.19,
+   39.67,
+   132.58
+  ],
+  [
+   354.99,
+   404.54,
+   189.47
+  ],
+  [
+   143.17,
+   134.06,
+   331.43
+  ],
+  [
+   45.64,
+   31.43,
+   76.92
+  ],
+  [
+   33.11,
+   26.38,
+   72.47
+  ],
+  [
+   127.42,
+   142.8,
+   73.87
+  ],
+  [
+   63.56,
+   53.4,
+   116.47
+  ],
+  [
+   71.19,
+   36.49,
+   151.5
+  ],
+  [
+   102.23,
+   63.51,
+   195.17
+  ],
+  [
+   1632.57,
+   1838.4,
+   940.44
+  ],
+  [
+   101.43,
+   68.38,
+   181.4
+  ]
+ ],
+ "reference": [
+  {
+   "modele": "GAP (tous ouverts)",
+   "solveur": "HiGHS",
+   "statut": "optimal",
+   "cout": 3278.18,
+   "affectation": {
+    "PV0001": "E02",
+    "PV0002": "E02",
+    "PV0003": "E03",
+    "PV0004": "E01",
+    "PV0005": "E01",
+    "PV0006": "E02",
+    "PV0007": "E02",
+    "PV0008": "E03",
+    "PV0009": "E02",
+    "PV0010": "E02",
+    "PV0011": "E03",
+    "PV0012": "E01",
+    "PV0013": "E02",
+    "PV0014": "E02",
+    "PV0015": "E03",
+    "PV0016": "E02",
+    "PV0017": "E02",
+    "PV0018": "E02",
+    "PV0019": "E03",
+    "PV0020": "E02"
+   }
+  },
+  {
+   "modele": "SSCFLP (ouverture + affectation)",
+   "solveur": "HiGHS",
+   "statut": "optimal",
+   "cout": 12857.06,
+   "affectation": {
+    "PV0001": "E02",
+    "PV0002": "E02",
+    "PV0003": "E03",
+    "PV0004": "E01",
+    "PV0005": "E01",
+    "PV0006": "E02",
+    "PV0007": "E02",
+    "PV0008": "E03",
+    "PV0009": "E02",
+    "PV0010": "E02",
+    "PV0011": "E03",
+    "PV0012": "E01",
+    "PV0013": "E02",
+    "PV0014": "E02",
+    "PV0015": "E03",
+    "PV0016": "E02",
+    "PV0017": "E02",
+    "PV0018": "E02",
+    "PV0019": "E03",
+    "PV0020": "E02"
+   }
+  }
+ ]
+}
