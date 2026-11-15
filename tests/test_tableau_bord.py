@@ -9,7 +9,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from backend import donnees, indicateurs as ind
-from backend.app import DOSSIER_SORTIES, app
+import backend.app as app_module
+from backend.app import app
 
 ID_S = "TN-S-g1-r135"
 
@@ -169,17 +170,23 @@ def test_titres_conclusion(di, ref_ssc):
     from backend.methodes import METHODES
     _, a = ref_ssc
     e = ind.evaluer(di, a, "sscflp")
-    un = ind.comparer(di, {"cs": {"temps_s": 1.0, "indicateurs": e}}, METHODES)
+    ex = lambda t, i=e, p=True: {"temps_s": t, "indicateurs": i, "optimal_prouve": p}
+    un = ind.comparer(di, {"cs": ex(1.0)}, METHODES)
     assert un["titre"].startswith("① Cut-and-solve trouve l’optimum")
     assert f"sur {di.m}" in un["titre"]
-    deux = ind.comparer(di, {"cs": {"temps_s": 1.0, "indicateurs": e}, "bp": {"temps_s": 3.0, "indicateurs": e}}, METHODES)
+    heur = ind.comparer(di, {"m1": ex(1.0, p=False)}, METHODES)
+    assert heur["titre"].startswith("⑤ Recuit simulé · pénalité propose") and "optimum" not in heur["titre"]
+    deux = ind.comparer(di, {"cs": ex(1.0), "bp": ex(3.0)}, METHODES)
     assert deux["titre"].startswith("Même coût optimal") and "① Cut-and-solve répond 3,0 fois plus vite" in deux["titre"]
+    sans_preuve = ind.comparer(di, {"h1": ex(1.0, p=False), "m2": ex(2.0, p=False)}, METHODES)
+    assert sans_preuve["titre"].startswith("Même coût, ")
     pire = dict(e, cout_total=e["cout_total"] + 100)
-    diff = ind.comparer(di, {"cs": {"temps_s": 1.0, "indicateurs": pire}, "bp": {"temps_s": 3.0, "indicateurs": e}}, METHODES)
+    diff = ind.comparer(di, {"cs": ex(1.0, pire), "bp": ex(3.0)}, METHODES)
     assert diff["titre"].startswith("② Branch-and-price donne le coût le plus bas")
     lignes = {l["cle"]: l for l in deux["lignes"]}
-    assert len(lignes) == 6 and lignes["h1"]["cout"] == "jalon ultérieur"
+    assert len(lignes) == 6 and lignes["h1"]["cout"] == "non lancé"
     assert lignes["cs"]["temps_gras"] and not lignes["bp"]["temps_gras"]
+    assert lignes["cs"]["garantie"] == "optimum prouvé"
 
 
 # ----------------------------------------------------------------------------- API de bout en bout (§10)
@@ -209,7 +216,7 @@ def test_api_depot_fichier(client, di):
 
 
 @pytest.mark.parametrize("modele", ["gap", "sscflp"])
-@pytest.mark.parametrize("cle", ["cs", "bp"])
+@pytest.mark.parametrize("cle", ["cs", "bp", "h1", "h2", "m1", "m2"])
 def test_api_calcul_reference(client, di, cle, modele):
     client.post("/api/instance", json={"exemple": "S"})
     job = client.post(f"/api/calcul/{cle}", json={"instance": ID_S, "modele": modele, "limite_temps": 60}).json()["job_id"]
@@ -240,9 +247,9 @@ def test_api_arret(client):
     assert _attendre(client, file)["etat"] == "arrete"
 
 
-def test_api_methode_jalon(client):
-    r = client.post("/api/calcul/h1", json={"instance": ID_S, "modele": "gap"})
-    assert r.status_code == 409
+def test_api_methode_inconnue(client):
+    r = client.post("/api/calcul/zz", json={"instance": ID_S, "modele": "gap"})
+    assert r.status_code == 404
 
 
 def test_api_validation(client, di, ref_ssc):
@@ -258,9 +265,9 @@ def test_api_validation(client, di, ref_ssc):
     assert ok.status_code == 200
     scen = ok.json()["scenario"]
     assert scen.startswith(f"SC-{ID_S}-SSC-")
-    fichier = DOSSIER_SORTIES / f"affectation_validee_{scen}.json"
+    fichier = app_module.DOSSIER_SORTIES / f"affectation_validee_{scen}.json"
     sortie = json.loads(fichier.read_text(encoding="utf-8"))
-    assert set(sortie) == {"scenario", "instance", "modele", "methode", "ajustements", "cout_total", "entrepots", "magasins"}
+    assert {"scenario", "instance", "modele", "methode", "ajustements", "cout_total", "entrepots", "magasins"} <= set(sortie)
     assert sortie["cout_total"] == pytest.approx(r["cout"], abs=1)
     assert len(sortie["magasins"]) == di.n and {"id", "lat", "lon", "demande", "entrepot"} <= set(sortie["magasins"][0])
     assert {"id", "lat", "lon", "capacite", "ouvert"} <= set(sortie["entrepots"][0])

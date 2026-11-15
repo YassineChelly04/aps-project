@@ -6,7 +6,6 @@ import json
 import threading
 import time
 import uuid
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 from fastapi import FastAPI, HTTPException, Request
@@ -14,20 +13,21 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from . import donnees
+from . import donnees, tournees
+from .api_module2 import routeur as routeur_m2
 from .donnees import RACINE, FormatInvalide
 from .indicateurs import comparer, ecart, evaluer, resume
 from .methodes import METHODES, PHASES, ArretSansSolution, MethodeIndisponible, resoudre, tuer_solveurs
+from .travaux import EXECUTEUR as _executeur, VERROU as _verrou
 
 DOSSIER_SORTIES = RACINE / "sorties"
 FRONTEND = RACINE / "frontend"
 
-app = FastAPI(title="APS · Module 1 – Distribution")
+app = FastAPI(title="Sijar · Planification de la distribution et des tournées")
+app.include_router(routeur_m2)
 INSTANCES: dict = {}           # id -> DonneesInstance
 JOBS: dict = {}                # job_id -> etat
-_verrou = threading.Lock()
-# Un seul calcul a la fois : les temps de reponse mesures ne sont pas faussés par un calcul voisin.
-_executeur = ThreadPoolExecutor(max_workers=1)
+# Un seul calcul a la fois (file partagee avec le module 2, backend/travaux.py).
 
 
 def _instance(ident: str):
@@ -51,7 +51,8 @@ def exemples():
 
 @app.post("/api/instance")
 async def instance(request: Request):
-    """Corps multipart (champ « fichier ») ou JSON {"exemple": "S"|"M"|"L"}."""
+    """Corps multipart (champ « fichier ») ou JSON {"exemple": "S"|"M"|"L"} ou {"id": "<id d'instance>"}
+    (instance du jeu ou instance corrigée par le retour du module 2)."""
     try:
         if request.headers.get("content-type", "").startswith("multipart/"):
             form = await request.form()
@@ -66,6 +67,13 @@ async def instance(request: Request):
             di = donnees.charger(brut, donnees.trouver_npz(ident) if ident else None)
         else:
             corps = await request.json()
+            if corps.get("id"):
+                chemin = tournees.trouver_instance(str(corps["id"]))
+                if chemin is None:
+                    raise HTTPException(404, f"Instance introuvable : {corps['id']}")
+                di = donnees.charger_fichier(chemin)
+                INSTANCES[di.id] = di
+                return resume(di)
             chemin = donnees.chemin_exemple(str(corps.get("exemple", "")))
             if chemin is None:
                 raise HTTPException(404, "Jeu d'exemple introuvable.")
@@ -217,20 +225,37 @@ def valider(demande: DemandeValidation):
     ind = evaluer(di, a, modele)
     if not ind["realisable"]:
         raise HTTPException(422, "Une capacité d'entrepôt est dépassée : l'affectation ne peut pas être validée.")
-    scenario = f"SC-{di.id}-{'SSC' if modele == 'sscflp' else 'GAP'}-{datetime.now():%H%M}"
+    maintenant = datetime.now()
+    scenario = f"SC-{di.id}-{'SSC' if modele == 'sscflp' else 'GAP'}-{demande.methode}-{maintenant:%m%d-%H%M%S}"
+    W = di.entrepots
+    # Fichier d'echange (§5) : champs exiges (identifiant, coordonnees, demande, entrepot affecte ;
+    # entrepots avec coordonnees et capacite ; scenario) + couts c_ij et distances vers chaque
+    # entrepot, pour que le module 2 puisse reviser l'affectation et faire le retour sans relire l'instance.
     sortie = {
         "scenario": scenario, "instance": di.id, "modele": modele, "methode": demande.methode,
+        "date": maintenant.isoformat(timespec="seconds"), "parent": None,
         "ajustements": [x.model_dump() for x in demande.ajustements],
-        "cout_total": ind["cout_total"],
-        "entrepots": [{"id": e["id"], "lat": e["lat"], "lon": e["lon"], "capacite": e["capacite"],
-                       "ouvert": bool(ind["ouverts"][j])} for j, e in enumerate(di.entrepots)],
-        "magasins": [{"id": s["id"], "lat": s["lat"], "lon": s["lon"], "demande": s["demande"],
-                      "entrepot": di.entrepots[int(a[i])]["id"]} for i, s in enumerate(di.magasins)],
+        "cout_total": ind["cout_total"], "cout_affectation": ind["cout_affectation"], "cout_fixe": ind["cout_fixe"],
+        "unite_cout": di.brut["meta"].get("unite_cout", "TND / semaine"),
+        "unite_demande": di.brut["meta"].get("unite_demande", "palettes / semaine"),
+        "kpal": float(di.brut["meta"].get("kpal", donnees.KPAL)),
+        "entrepots": [{"id": e["id"], "nom": di.nom_court(j), "lat": e["lat"], "lon": e["lon"], "capacite": e["capacite"],
+                       "cout_fixe": float(di.f[j]), "ouvert": bool(ind["ouverts"][j])} for j, e in enumerate(W)],
+        "magasins": [{"id": s["id"], "ville": s.get("ville", ""), "lat": s["lat"], "lon": s["lon"], "demande": s["demande"],
+                      "entrepot": W[int(a[i])]["id"], "cout_affectation": round(float(di.C[i, a[i]]), 2),
+                      "distance_km": round(float(di.dist[i, a[i]]), 3),
+                      "couts": {e["id"]: round(float(di.C[i, j]), 2) for j, e in enumerate(W)},
+                      "distances_km": {e["id"]: round(float(di.dist[i, j]), 3) for j, e in enumerate(W)}}
+                     for i, s in enumerate(di.magasins)],
     }
     DOSSIER_SORTIES.mkdir(exist_ok=True)
     chemin = DOSSIER_SORTIES / f"affectation_validee_{scenario}.json"
     chemin.write_text(json.dumps(sortie, ensure_ascii=False, indent=1), encoding="utf-8")
-    return {"scenario": scenario, "fichier": str(chemin.relative_to(RACINE)), "n_magasins": di.n,
+    try:  # chemin relatif au projet pour l'affichage ; absolu si sorties/ est ailleurs (tests)
+        fichier = str(chemin.relative_to(RACINE))
+    except ValueError:
+        fichier = str(chemin)
+    return {"scenario": scenario, "fichier": fichier, "n_magasins": di.n,
             "n_ouverts": ind["entrepots_ouverts"], "cout_total": ind["cout_total"]}
 
 

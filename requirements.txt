@@ -4,5 +4,8 @@ pulp
 fastapi
 uvicorn
 python-multipart
+openpyxl
+psutil
+matplotlib
 pytest
 httpx

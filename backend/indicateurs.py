@@ -150,31 +150,44 @@ def comparer(di: DonneesInstance, resultats: dict, methodes: dict) -> dict:
     cout = {k: resultats[k]["indicateurs"]["cout_total"] for k in dk}
     temps = {k: resultats[k]["temps_s"] for k in dk}
     best, best_t = min(cout.values()), min(temps.values())
+    prouve = {k: bool(resultats[k].get("optimal_prouve", False)) for k in dk}
     if len(dk) >= 2:
         if all(abs(cout[k] - best) < 0.5 for k in dk):
             rapide = sorted(dk, key=lambda k: temps[k])
             ratio = temps[rapide[-1]] / max(temps[rapide[0]], 1e-9)
-            titre = f"Même coût optimal, {nf(best)} TND/semaine : {nom(rapide[0])} répond {nf(ratio, 1)} fois plus vite"
+            qualif = "Même coût optimal" if any(prouve.values()) else "Même coût"
+            titre = f"{qualif}, {nf(best)} TND/semaine : {nom(rapide[0])} répond {nf(ratio, 1)} fois plus vite"
         else:
-            titre = f"{nom(min(dk, key=lambda k: cout[k]))} donne le coût le plus bas : {nf(best)} TND/semaine"
+            k_best = min(dk, key=lambda k: (cout[k], temps[k]))
+            titre = f"{nom(k_best)} donne le coût le plus bas : {nf(best)} TND/semaine"
     else:
         k = dk[0]
         o = resultats[k]["indicateurs"]["entrepots_ouverts"]
-        titre = f"{nom(k)} trouve l’optimum : {nf(best)} TND/semaine avec {o} entrepôt{'s' if o > 1 else ''} sur {di.m}"
+        verbe = "trouve l’optimum" if prouve[k] else "propose"
+        titre = f"{nom(k)} {verbe} : {nf(best)} TND/semaine avec {o} entrepôt{'s' if o > 1 else ''} sur {di.m}"
     ref = resultats[min(dk, key=lambda k: cout[k])]["indicateurs"]
+    restants = [methodes[k]["num"] for k in methodes if k not in resultats and methodes[k]["pret"]]
     sous_titre = (f"Taux d’utilisation {pct(ref['taux_utilisation'], 0)}, distance moyenne magasin–entrepôt "
-                  f"{nf(ref['distance_moyenne'], 1)} km. Les méthodes ③ à ⑥ compléteront la comparaison au jalon suivant.")
+                  f"{nf(ref['distance_moyenne'], 1)} km."
+                  + (f" Méthodes non lancées : {' '.join(restants)}." if restants else " Les six méthodes ont été lancées."))
+    if any(prouve.values()):
+        sous_titre += " L’écart est mesuré par rapport à un optimum prouvé."
     lignes = []
     for k, mt in methodes.items():
         r = resultats.get(k)
-        ligne = {"cle": k, "methode": nom(k), "famille": FAMILLES[mt["famille"]], "termine": r is not None}
+        ligne = {"cle": k, "methode": nom(k), "famille": FAMILLES[mt["famille"]], "termine": r is not None,
+                 "garantie": ""}
         if r:
             ind = r["indicateurs"]
             ligne.update(cout=nf(ind["cout_total"]), cout_gras=abs(ind["cout_total"] - best) < 0.5,
                          temps=nf(temps[k], 2) + " s", temps_gras=temps[k] == best_t,
                          ecart=pct(ecart(ind["cout_total"], best), 2),
                          ouverts=f"{ind['entrepots_ouverts']} / {di.m}",
-                         utilisation=pct(ind["taux_utilisation"], 0), distance=nf(ind["distance_moyenne"], 1) + " km")
+                         utilisation=pct(ind["taux_utilisation"], 0), distance=nf(ind["distance_moyenne"], 1) + " km",
+                         garantie=("optimum prouvé" if r.get("optimal_prouve") else
+                                   f"écart à la borne {pct(r['ecart_borne'], 2)}" if r.get("ecart_borne") is not None
+                                   else "sans garantie")
+                         + (f" · graine {r['graine']}" if r.get("graine") is not None else ""))
         else:
             ligne.update(cout="non lancé" if mt["pret"] else "jalon ultérieur", cout_gras=False, temps="—",
                          temps_gras=False, ecart="—", ouverts="—", utilisation="—", distance="—")

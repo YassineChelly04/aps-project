@@ -1,0 +1,11 @@
+{
+ "date": "2026-11-09T07:59:28",
+ "os": "Windows-10-10.0.26200-SP0",
+ "processeur": "Intel64 Family 6 Model 165 Stepping 2, GenuineIntel",
+ "coeurs_logiques": 16,
+ "processus_paralleles": 8,
+ "python": "3.11.0",
+ "numpy": "2.3.5",
+ "scipy": "1.17.1",
+ "pulp": "3.3.2"
+}

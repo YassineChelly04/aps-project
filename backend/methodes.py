@@ -4,6 +4,7 @@ enveloppees, pas reecrites : leur journal (_log) est intercepte pour remonter la
 courante et la trace (temps, meilleur cout) necessaire a l'integrale primale."""
 from __future__ import annotations
 
+import math
 import os
 import re
 import signal
@@ -20,18 +21,29 @@ from .indicateurs import evaluer
 if str(RACINE) not in sys.path:
     sys.path.insert(0, str(RACINE))
 import module1_methods as m1  # noqa: E402
+import module1_heuristiques as mh  # noqa: E402
 
 METHODES = {
-    "cs": {"num": "①", "nom": "Cut-and-solve", "ref": "Gadegaard, Klose & Nielsen (2018)", "famille": "exacte", "pret": True},
-    "bp": {"num": "②", "nom": "Branch-and-price", "ref": "Ryu & Park (2021)", "famille": "exacte", "pret": True},
-    "h1": {"num": "③", "nom": "Matheuristique à grands voisinages", "ref": "Kong (2021)", "famille": "heuristique", "pret": False},
-    "h2": {"num": "④", "nom": "Kernel Search + motifs", "ref": "Bakker et al. (2025)", "famille": "heuristique", "pret": False},
-    "m1": {"num": "⑤", "nom": "Recuit simulé", "ref": "McKendall & Dhungel (2024)", "famille": "metaheuristique", "pret": False},
-    "m2": {"num": "⑥", "nom": "Recuit multi-voisinages", "ref": "Ceschia & Schaerf (2024)", "famille": "metaheuristique", "pret": False},
+    "cs": {"num": "①", "nom": "Cut-and-solve", "ref": "Gadegaard, Klose & Nielsen (2018)", "famille": "exacte",
+           "pret": True, "stochastique": False},
+    "bp": {"num": "②", "nom": "Branch-and-price", "ref": "Ryu & Park (2021)", "famille": "exacte",
+           "pret": True, "stochastique": False},
+    "h1": {"num": "③", "nom": "Matheuristique à grands voisinages", "ref": "Regret + échanges, puis LNS à réparation MIP (Shaw 1998 ; Pisinger & Ropke 2010)",
+           "famille": "heuristique", "pret": True, "stochastique": True},
+    "h2": {"num": "④", "nom": "Kernel Search", "ref": "Angelelli, Mansini & Speranza (2010) ; Guastaroba & Speranza (2014)",
+           "famille": "heuristique", "pret": True, "stochastique": False},
+    "m1": {"num": "⑤", "nom": "Recuit simulé · pénalité", "ref": "Kirkpatrick et al. (1983) ; capacités pénalisées",
+           "famille": "metaheuristique", "pret": True, "stochastique": True},
+    "m2": {"num": "⑥", "nom": "Recuit multi-voisinages · réparation", "ref": "Principe de Ceschia & Schaerf ; capacités réparées",
+           "famille": "metaheuristique", "pret": True, "stochastique": True},
 }
 PHASES = {
     "cs": ["Plans coupants", "Branchement local", "Problème épars / dense", "Fermeture de l’écart"],
     "bp": ["Décomposition de Dantzig-Wolfe", "Génération de colonnes", "Branchement", "Fermeture de l’écart"],
+    "h1": ["Construction par regret", "Échanges (déplacer / permuter)", "Grands voisinages + MIP", "Polissage"],
+    "h2": ["Relaxation linéaire", "MIP sur le noyau", "Paquets de variables", "Polissage"],
+    "m1": ["Solution initiale", "Calibrage de la température", "Recuit (capacités pénalisées)", "Polissage"],
+    "m2": ["Solution initiale", "Calibrage de la température", "Recuit (4 voisinages, réparation)", "Polissage"],
 }
 # (motif du journal, indice de phase, le message porte-t-il un nouveau meilleur cout ?)
 _REGLES = {
@@ -148,34 +160,47 @@ def resoudre(cle, instance: DonneesInstance, modele, limite_temps, graine=0, pro
         raise MethodeIndisponible(f"{METHODES[cle]['num']} {METHODES[cle]['nom']} : jalon ultérieur, pas encore implémentée.")
     if modele not in ("gap", "sscflp"):
         raise ValueError("modele doit valoir 'gap' ou 'sscflp'")
-    phases, regles = PHASES[cle], _REGLES[cle]
+    phases = PHASES[cle]
     trace, etat = [], {"phase": 0}
     t0 = time.perf_counter()
 
-    def signaler(k):
+    def signaler(k, fraction=None):
         etat["phase"] = max(etat["phase"], k)
         if progression:
-            progression(phases[etat["phase"]], (etat["phase"] + 0.5) / len(phases))
-
-    def ecoute(msg):
-        for motif, k, porte_cout in regles:
-            mo = re.search(motif, msg)
-            if mo:
-                if porte_cout:
-                    trace.append((time.perf_counter() - t0, float(mo.group(1))))
-                signaler(k)
-                break
+            fr = (etat["phase"] + (0.5 if fraction is None else fraction)) / len(phases)
+            progression(phases[etat["phase"]], min(fr, 1.0))
 
     inst = _instance_m1(instance, modele)
     signaler(0)
-    _local.ecoute, _local.arret = ecoute, arret
-    try:
-        if cle == "cs":
-            sol = m1.gadegaard2018_cut_and_solve(inst, time_limit=limite_temps, verbose=True)
-        else:
-            sol = m1.ryu_park2021_branch_and_price(inst, time_limit=limite_temps, verbose=True)
-    finally:
-        _local.ecoute = _local.arret = None
+    if cle in ("cs", "bp"):
+        regles = _REGLES[cle]
+
+        def ecoute(msg):
+            for motif, k, porte_cout in regles:
+                mo = re.search(motif, msg)
+                if mo:
+                    if porte_cout:
+                        trace.append((time.perf_counter() - t0, float(mo.group(1))))
+                    signaler(k)
+                    break
+
+        _local.ecoute, _local.arret = ecoute, arret
+        try:
+            if cle == "cs":
+                sol = m1.gadegaard2018_cut_and_solve(inst, time_limit=limite_temps, verbose=True)
+            else:
+                sol = m1.ryu_park2021_branch_and_price(inst, time_limit=limite_temps, verbose=True)
+        finally:
+            _local.ecoute = _local.arret = None
+    else:
+        def rapport(phase, fraction, cout):
+            if cout is not None and math.isfinite(cout) and (not trace or cout < trace[-1][1] - 1e-9):
+                trace.append((time.perf_counter() - t0, float(cout)))
+            signaler(phase, fraction)
+
+        fn = mh.METHODES_HEURISTIQUES[cle]
+        kw = {"seed": int(graine)} if METHODES[cle]["stochastique"] else {}
+        sol = fn(inst, time_limit=limite_temps, rapport=rapport, arret=arret, **kw)
     temps = time.perf_counter() - t0
     arrete = arret is not None and arret.is_set()
     if not sol.feasible or (sol.assign < 0).any():
@@ -190,7 +215,9 @@ def resoudre(cle, instance: DonneesInstance, modele, limite_temps, graine=0, pro
         "affectation": instance.ids(sol.assign),
         "cout_total": ind["cout_total"],
         "borne_inf": None if lb is None or not np.isfinite(lb) else float(lb),
-        "optimal_prouve": bool(sol.proven_optimal),
+        # une heuristique dont le cout atteint sa borne (LP du Kernel Search) a aussi prouve l'optimum
+        "optimal_prouve": bool(sol.proven_optimal or (sol.gap is not None and sol.gap < 1e-9)),
+        "graine": int(graine) if METHODES[cle]["stochastique"] else None,
         "arrete": arrete,
         "ecart_borne": None if sol.gap is None else float(sol.gap),
         "temps_s": temps,
